@@ -1,0 +1,343 @@
+<!-- !AI-GENERATED FILE! -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComToTick</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        header {
+            background: #1a73e8;
+            color: white;
+            padding: 18px 32px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            color: #1a73e8;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        textarea:focus { outline: none; border-color: #1a73e8; }
+
+        input[type="number"] {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            width: 160px;
+            font-family: inherit;
+        }
+
+        input[type="number"]:focus { outline: none; border-color: #1a73e8; }
+
+        .row { display: flex; gap: 12px; align-items: center; }
+
+        button {
+            padding: 10px 24px;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #1558b0; }
+        button:disabled { background: #aaa; cursor: not-allowed; }
+
+        #submitBtn { margin-top: 12px; }
+
+        #status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: #f5f7fa;
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 2px solid #e0e0e0;
+            color: #555;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafbff; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge.high    { background: #fde8e8; color: #c0392b; }
+        .badge.medium  { background: #fef6e0; color: #b07d00; }
+        .badge.low     { background: #e8f5e9; color: #2e7d32; }
+
+        .badge.bug     { background: #fde8e8; color: #c0392b; }
+        .badge.feature { background: #e8f0fe; color: #1a73e8; }
+        .badge.billing { background: #fef6e0; color: #b07d00; }
+        .badge.account { background: #f3e8fd; color: #6d28d9; }
+        .badge.other   { background: #f0f0f0; color: #555; }
+
+        .empty { color: #aaa; font-style: italic; padding: 12px 0; }
+
+        .refresh-btn {
+            float: right;
+            margin-top: -4px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+        }
+
+        .ticket-result {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 8px;
+            background: #f5f7fa;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        .ticket-result .label {
+            font-weight: 600;
+            color: #555;
+            display: inline-block;
+            width: 90px;
+        }
+
+        .ticket-result.error {
+            background: #fde8e8;
+            color: #c0392b;
+        }
+
+        .comment-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+        }
+
+        .comment-item:last-child { border-bottom: none; }
+        .comment-item:hover { background: #fafbff; }
+    </style>
+</head>
+<body>
+
+<header>💬 ComToTick — Comment to Ticket</header>
+
+<div class="container">
+
+    <!-- Submit Comment -->
+    <div class="card">
+        <h2>✍️ Submit a Comment</h2>
+        <textarea id="commentInput" placeholder="Describe your issue or feedback..."></textarea>
+        <br>
+        <button id="submitBtn" onclick="submitComment()">Submit</button>
+        <div id="status"></div>
+    </div>
+
+    <!-- Comments -->
+    <div class="card">
+        <h2>💬 Submitted Comments <button class="refresh-btn" onclick="loadComments()">↻ Refresh</button></h2>
+        <div id="commentsContainer"><p class="empty">No comments yet.</p></div>
+    </div>
+
+    <!-- Search Ticket by ID -->
+    <div class="card">
+        <h2>🔍 Search Ticket by ID</h2>
+        <div class="row">
+            <input type="number" id="ticketIdInput" placeholder="Enter ticket ID" min="1" />
+            <button onclick="searchTicket()">Search</button>
+        </div>
+        <div id="ticketResult"></div>
+    </div>
+
+    <!-- All Tickets -->
+    <div class="card">
+        <h2>🎫 All Tickets <button class="refresh-btn" onclick="loadTickets()">↻ Refresh</button></h2>
+        <div id="ticketsContainer"><p class="empty">No tickets yet.</p></div>
+    </div>
+
+</div>
+
+<script>
+    async function submitComment() {
+        const input = document.getElementById('commentInput');
+        const status = document.getElementById('status');
+        const btn = document.getElementById('submitBtn');
+        const text = input.value.trim();
+
+        if (!text) { status.textContent = 'Please enter a comment.'; return; }
+
+        btn.disabled = true;
+        status.textContent = '⏳ Analyzing comment...';
+
+        try {
+            const res = await fetch('/comments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: text })
+            });
+
+            if (res.ok) {
+                status.textContent = '✅ Comment submitted! If it qualified, a ticket was created.';
+                input.value = '';
+                setTimeout(() => { loadComments(); loadTickets(); }, 1000);
+            } else {
+                status.textContent = '❌ Failed to submit comment.';
+            }
+        } catch (e) {
+            status.textContent = '❌ Error: ' + e.message;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    async function loadComments() {
+        const container = document.getElementById('commentsContainer');
+        try {
+            const res = await fetch('/comments');
+            const comments = await res.json();
+
+            if (comments.length === 0) {
+                container.innerHTML = '<p class="empty">No comments yet.</p>';
+                return;
+            }
+
+            container.innerHTML = comments.map(c => `
+                <div class="comment-item">#${c.id} — ${c.content}</div>
+            `).join('');
+        } catch (e) {
+            container.innerHTML = '<p class="empty">Failed to load comments.</p>';
+        }
+    }
+
+    async function searchTicket() {
+        const id = document.getElementById('ticketIdInput').value.trim();
+        const result = document.getElementById('ticketResult');
+
+        if (!id) { result.innerHTML = '<div class="ticket-result error">Please enter a ticket ID.</div>'; return; }
+
+        try {
+            const res = await fetch(`/tickets/${id}`);
+
+            if (res.status === 404 || !res.ok) {
+                result.innerHTML = `<div class="ticket-result error">❌ No ticket found with ID ${id}.</div>`;
+                return;
+            }
+
+            const t = await res.json();
+            result.innerHTML = `
+                <div class="ticket-result">
+                    <div><span class="label">ID:</span> ${t.id}</div>
+                    <div><span class="label">Title:</span> ${t.title}</div>
+                    <div><span class="label">Category:</span> <span class="badge ${t.category}">${t.category}</span></div>
+                    <div><span class="label">Priority:</span> <span class="badge ${t.priority}">${t.priority}</span></div>
+                    <div><span class="label">Summary:</span> ${t.shortSummary}</div>
+                    <div><span class="label">Comment:</span> ${t.content}</div>
+                </div>`;
+        } catch (e) {
+            result.innerHTML = `<div class="ticket-result error">❌ Error: ${e.message}</div>`;
+        }
+    }
+
+    async function loadTickets() {
+        const container = document.getElementById('ticketsContainer');
+        try {
+            const res = await fetch('/tickets');
+            const tickets = await res.json();
+
+            if (tickets.length === 0) {
+                container.innerHTML = '<p class="empty">No tickets yet.</p>';
+                return;
+            }
+
+            container.innerHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Summary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tickets.map(t => `
+                            <tr>
+                                <td>${t.id}</td>
+                                <td>${t.title}</td>
+                                <td><span class="badge ${t.category}">${t.category}</span></td>
+                                <td><span class="badge ${t.priority}">${t.priority}</span></td>
+                                <td>${t.shortSummary}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>`;
+        } catch (e) {
+            container.innerHTML = '<p class="empty">Failed to load tickets.</p>';
+        }
+    }
+
+    // Initial load
+    loadComments();
+    loadTickets();
+</script>
+
+</body>
+</html>
